@@ -1,3 +1,23 @@
+-- ═══════════ ANTI-KICK ═══════════
+local mt = getrawmetatable and getrawmetatable(game)
+if mt then
+    local oldNamecall = mt.__namecall
+    setreadonly(mt, false)
+    mt.__namecall = newcclosure(function(self, ...)
+        local method = getnamecallmethod()
+        if method == "Kick" then
+            local args = {...}
+            local reason = tostring(args[1] or "")
+            -- Блокируем любой кик с "disallowed" или "anticheat"
+            if reason:lower():find("disallow") or reason:lower():find("anticheat") or reason:lower():find("exploit") then
+                warn("[AntiKick] Blocked kick:", reason)
+                return
+            end
+        end
+        return oldNamecall(self, ...)
+    end)
+    setreadonly(mt, true)
+end
 -- ═══════════════════════════════════════════════════════════════
 --   BogdanWare  ·  Sakura Edition  ·  Shader + HitSound + AntiFling + Wallbang
 --   RightControl — меню   |   X — выгрузить скрипт
